@@ -39,13 +39,30 @@ long sumatoriaC=0;
 
 //POTENCIA
 float aActiveP = 0;
-float aReactiveP = 0;
-   //Promediar potencia
-int grupoP = 200;
-int iP = 0;
-long sumatoriaP;
+float aParenteP = 0;
+   //Promediar potencia activa
+int grupoPactiva = 200;
+int iPactiva = 0;
+long sumatoriaPactiva;
 int activeP;
+   //Potencia aparente
+int parentP;
+   //Potencia reactiva
+int reactiveP;
+   //Promediar rmsC
+int grupoC2=grupoPactiva;
+int iC2=0;
+double sumatoriaC2;
+float rmsC;
+   //Promediar rmsV
+int grupoV2=grupoPactiva;
+int iV2=0;
+double sumatoriaV2;
+float rmsV;
 
+
+//PROTOTIPOS
+void promediarInt(int &contador, int grupo, int sumando, long &sumatoria, int &promedio);
 
 //MONITOREO SERIAL PC
 void imprimirOscilos();
@@ -65,21 +82,36 @@ void loop() {
   checkER();
   aV = analogRead(pV);
   aC = analogRead(pC); 
-  promediar(iV,grupoV,aV,sumatoriaV,aZV); //(contador,grupo,sumando,sumatoria,promedio)
-  promediar(iC,grupoC,aC,sumatoriaC,aZC); //(contador,grupo,sumando,sumatoria,promedio)
+  promediarInt(iV,grupoV,aV,sumatoriaV,aZV); //(contador,grupo,sumando,sumatoria,promedio)
+  promediarInt(iC,grupoC,aC,sumatoriaC,aZC); //(contador,grupo,sumando,sumatoria,promedio)
   aRealV = (aV-aZV) * (sensV);
   aRealC = (aC-aZC) * (sensC);
+  //Potencia activa
   aActiveP = aRealV * aRealC;
-  promediar(iP,grupoP,aActiveP,sumatoriaP,activeP); //(contador,grupo,sumando,sumatoria,promedio)
+  promediarInt(iPactiva,grupoPactiva,aActiveP,sumatoriaPactiva,activeP); //(contador,grupo,sumando,sumatoria,promedio)
+  //Potencia aparente
+  promediarRMS(iC2,grupoC2,pow(aRealC,2),sumatoriaC2,rmsC);
+  promediarRMS(iV2,grupoV2,pow(aRealV,2),sumatoriaV2,rmsV);
+  parentP = rmsV * rmsC;
   //imprimirOscilos(true,false,false,false,true);  //(aVC,centro,bandas,potencia,realVC)
   imprimirVCP();
   delay(100);
   }
 
 //FUNCIÓN PROMEDIADORA ANÁLISA EL CERO EN LECTURA
-void promediar(int &contador, int grupo, int sumando, long &sumatoria, int &promedio){
+void promediarInt(int &contador, int grupo, int sumando, long &sumatoria, int &promedio){
   if(contador >= grupo){
     promedio = (sumatoria/contador);
+    sumatoria =0;
+    contador = 0;
+  }else{
+    sumatoria = sumatoria + sumando;
+    contador++;    
+    }
+  }
+void promediarRMS(int &contador, int grupo, float sumando, double &sumatoria, float &promedio){
+  if(contador >= grupo){
+    promedio = sqrt(sumatoria/contador);
     sumatoria =0;
     contador = 0;
   }else{
@@ -158,11 +190,14 @@ void imprimirOscilos(bool aVC, bool centro, bool bandas, bool pot, bool realCV){
   }
 void imprimirVCP(){  //Imprimir valores en tabla
    Serial.print("Voltaje:");
-   Serial.print(aRealV);
+   Serial.print(rmsV);
    Serial.print(",");
    Serial.print("Corriente:");
-   Serial.print(aRealC);
+   Serial.print(rmsC);
    Serial.print(",");
-   Serial.print("Potencia:");
-   Serial.println(activeP);
+   Serial.print("P-activa:");
+   Serial.print(activeP);
+   Serial.print(",");
+   Serial.print("P-aparente:");
+   Serial.println(parentP);
   }
