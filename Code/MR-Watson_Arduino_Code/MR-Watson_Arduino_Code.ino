@@ -59,7 +59,8 @@ int grupoV2=grupoPactiva;
 int iV2=0;
 double sumatoriaV2;
 float rmsV;
-
+  //Factor de potencia
+float fp;
 
 //PROTOTIPOS
 void promediarInt(int &contador, int grupo, int sumando, long &sumatoria, int &promedio);
@@ -93,6 +94,8 @@ void loop() {
   promediarRMS(iC2,grupoC2,pow(aRealC,2),sumatoriaC2,rmsC);
   promediarRMS(iV2,grupoV2,pow(aRealV,2),sumatoriaV2,rmsV);
   parentP = rmsV * rmsC;
+  reactiveP = parentP - activeP;
+  fp = (float)activeP/(float)parentP;
   //imprimirOscilos(true,false,false,false,true);  //(aVC,centro,bandas,potencia,realVC)
   imprimirVCP();
   delay(100);
@@ -195,9 +198,16 @@ void imprimirVCP(){  //Imprimir valores en tabla
    Serial.print("Corriente:");
    Serial.print(rmsC);
    Serial.print(",");
-   Serial.print("P-activa:");
+   Serial.print("P-activa[W]:");
    Serial.print(activeP);
    Serial.print(",");
-   Serial.print("P-aparente:");
-   Serial.println(parentP);
+   Serial.print("P-reactiva[VAR]:");
+   Serial.print(reactiveP);
+   Serial.print(",");
+   Serial.print("P-aparente[W]:");
+   Serial.print(parentP);
+   Serial.print(",");
+   Serial.print("FP:");
+   Serial.println(fp);
+   
   }
