@@ -1,0 +1,168 @@
+//BIBLIOTECAS
+
+//RELEVADOR
+#define pR 2      //Pin digital a relé
+#define eR 3      //Pin digital para introducir estado relé con switch corredera
+#define V5 5      //Auxiliar para definir estado lógico HIGH en switch rele
+bool eRactual=0;    //Booleano para guardar el estado actual del relevador
+bool eRanterior=0;  //Booleano guarda en anterior lectura del relevador 
+void estadoRele(bool state);   //Subfunción para definir el estado de relevador
+void checkER();                //Revisa si hay cambios en estado de relavador 
+
+//TENSIÓN
+#define pV A0    //Pin analógico a sensor tensión ZMPT101B
+int aV = 512;    //Valor analógico de sensorVoltaje
+int aSV = 512;   //Guarda pico superior de voltaje
+int aIV = 512;   //Guarda pico inferior de voltaje
+int aZV = 519;   //Guarda el Zero de voltaje
+float aRealV = 0;
+float sensV = 182.4335/133.0;
+    //promedioTensión
+int iV=0;
+int grupoV=250;
+long sumatoriaV=0;
+
+
+//CORRIENTE
+#define pC A1   //Pian analógico a sensor corriente ACS712
+int aC = 512;    //Valor analógico de sensor corriente
+int aSC = 512;   //Valor superior análogo
+int aIC = 512;   //Valor inferior análogo
+int aZC = 520;   //Guarda el Zero de corriente
+float aRealC = 0;
+float sensC = (1.0961/17.0);
+   //promedioCorriente
+int iC=0;
+int grupoC=63;
+long sumatoriaC=0;
+
+
+//POTENCIA
+float aActiveP = 0;
+float aReactiveP = 0;
+   //Promediar potencia
+int grupoP = 200;
+int iP = 0;
+long sumatoriaP;
+int activeP;
+
+
+//MONITOREO SERIAL PC
+void imprimirOscilos();
+short cero = 0;
+
+void setup() {
+  //INICIALIZAR ESTADOS
+  Serial.begin(9600);     //Inicialización comunicación serial
+  
+  //DEFINICIONES
+  pinMode(pR, OUTPUT);    //Salir para pin Relevador
+  pinMode(V5,OUTPUT);     //Iniciamos salida en V5
+  digitalWrite(V5,HIGH);     //Definimos estado en V5
+  }
+
+void loop() {
+  checkER();
+  aV = analogRead(pV);
+  aC = analogRead(pC); 
+  promediar(iV,grupoV,aV,sumatoriaV,aZV); //(contador,grupo,sumando,sumatoria,promedio)
+  promediar(iC,grupoC,aC,sumatoriaC,aZC); //(contador,grupo,sumando,sumatoria,promedio)
+  aRealV = (aV-aZV) * (sensV);
+  aRealC = (aC-aZC) * (sensC);
+  aActiveP = aRealV * aRealC;
+  promediar(iP,grupoP,aActiveP,sumatoriaP,activeP); //(contador,grupo,sumando,sumatoria,promedio)
+  //imprimirOscilos(true,false,false,false,true);  //(aVC,centro,bandas,potencia,realVC)
+  imprimirVCP();
+  delay(100);
+  }
+
+//FUNCIÓN PROMEDIADORA ANÁLISA EL CERO EN LECTURA
+void promediar(int &contador, int grupo, int sumando, long &sumatoria, int &promedio){
+  if(contador >= grupo){
+    promedio = (sumatoria/contador);
+    sumatoria =0;
+    contador = 0;
+  }else{
+    sumatoria = sumatoria + sumando;
+    contador++;    
+    }
+  }
+//FUNCIÓN DE REVISA SI HUBO CAMBIOS PARA ACTUALIZAR RELÉ
+void checkER(){
+  eRactual = digitalRead(eR);
+  if(eRanterior != eRactual)
+  {
+    estadoRele(eRactual);
+    eRanterior = eRactual;   
+   }
+  }
+
+//SUBFUNCIÓN DE ESTADO RELEVADOR
+void estadoRele(bool state){
+  digitalWrite(pR,state);
+  }
+//ANEXO
+void imprimirOscilos(bool aVC, bool centro, bool bandas, bool pot, bool realCV){ //OSCILOSCOPIO
+  if(aVC){
+    //La impresión de comillas es para el formato de serialplot
+    Serial.print("aVolt:");
+    Serial.print(aV);   //Impresión de voltaje analógico
+    Serial.print(",");
+    Serial.print("aCorri:");  
+    Serial.print(aC);  //Impresión de corriente analógico
+    Serial.print(",");
+    }
+  if(centro){
+    Serial.print("CeroV:");
+    Serial.print(aZV);
+    Serial.print(",");
+    Serial.print("CeroC:");
+    Serial.print(aZC);
+    Serial.print(",");
+    }
+  if(bandas){
+    int aZIV = aZV-6;  //Guarda el limite inferior de banda cero
+    int aZSV = aZV+6;  //Guarda el limite superior de banda cero  
+    int aZIC = aZC-3;  //Guarda el limite inferior de banda cero
+    int aZSC = aZC+3;  //Guarda el limite superior de banda cero
+     
+    //La impresión de comillas es para el formato de serialplot
+    Serial.print("BandaV0:");
+    Serial.print(aZIV);//Impresión de banda inf Voltaje
+    Serial.print(","); 
+    Serial.print("BandaV1:");
+    Serial.print(aZSV);//Impresión de banda superior Voltaje
+    Serial.print(",");
+    Serial.print("BandaC0:");
+    Serial.print(aZIC); //Impresión de banda inferior Corriente
+    Serial.print(",");
+    Serial.print("BandaC1:");
+    Serial.print(aZSC); //Impresión de banda superior Corriente
+    Serial.print(",");
+    }
+  if(pot){
+    Serial.print("PotenciaActiva:");
+    Serial.print(aActiveP);        //Impresión de la lectura de potencia instantanea
+    Serial.print(",");
+    }
+  if(realCV){
+    Serial.print("Voltaje:");
+    Serial.print(aRealV);
+    Serial.print(",");
+    Serial.print("Corriente:");
+    Serial.print(aRealC);
+    Serial.print(",");
+    }  
+  Serial.print("cero:");
+  Serial.println(cero);
+  }
+void imprimirVCP(){  //Imprimir valores en tabla
+   Serial.print("Voltaje:");
+   Serial.print(aRealV);
+   Serial.print(",");
+   Serial.print("Corriente:");
+   Serial.print(aRealC);
+   Serial.print(",");
+   Serial.print("Potencia:");
+   Serial.println(activeP);
+  }
