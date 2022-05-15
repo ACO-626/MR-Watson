@@ -15,8 +15,8 @@ int aV = 512;    //Valor analógico de sensorVoltaje
 int aSV = 512;   //Guarda pico superior de voltaje
 int aIV = 512;   //Guarda pico inferior de voltaje
 int aZV = 519;   //Guarda el Zero de voltaje
-float aRealV = 0;
-float sensV = 182.4335/133.0;
+float aRealV;
+float sensV = 182.4335/136.5;
     //promedioTensión
 int iV=0;
 int grupoV=250;
@@ -29,7 +29,7 @@ int aC = 512;    //Valor analógico de sensor corriente
 int aSC = 512;   //Valor superior análogo
 int aIC = 512;   //Valor inferior análogo
 int aZC = 520;   //Guarda el Zero de corriente
-float aRealC = 0;
+float aRealC;
 float sensC = (1.0961/17.0);
    //promedioCorriente
 int iC=0;
@@ -38,8 +38,8 @@ long sumatoriaC=0;
 
 
 //POTENCIA
-float aActiveP = 0;
-float aParenteP = 0;
+float aActiveP;
+float aParenteP;
    //Promediar potencia activa
 int grupoPactiva = 200;
 int iPactiva = 0;
@@ -59,6 +59,7 @@ int grupoV2=grupoPactiva;
 int iV2=0;
 double sumatoriaV2;
 float rmsV;
+int diferenciadorVC = 30;    //Valor que diferencia si algo es corriente o voltaje, no se espera Irms > 30;
   //Factor de potencia
 float fp;
 
@@ -93,11 +94,7 @@ void loop() {
   //Potencia aparente
   promediarRMS(iC2,grupoC2,pow(aRealC,2),sumatoriaC2,rmsC);
   promediarRMS(iV2,grupoV2,pow(aRealV,2),sumatoriaV2,rmsV);
-  parentP = rmsV * rmsC;
-  reactiveP = parentP - activeP;
-  fp = (float)activeP/(float)parentP;
-  //imprimirOscilos(true,false,false,false,true);  //(aVC,centro,bandas,potencia,realVC)
-  imprimirVCP();
+  
   delay(100);
   }
 
@@ -115,6 +112,13 @@ void promediarInt(int &contador, int grupo, int sumando, long &sumatoria, int &p
 void promediarRMS(int &contador, int grupo, float sumando, double &sumatoria, float &promedio){
   if(contador >= grupo){
     promedio = sqrt(sumatoria/contador);
+    
+    if(sumatoria == sumatoriaV2 ){ //Si ya se actualiza Vrms calcula potencia
+      parentP = rmsV * rmsC;
+      reactiveP = parentP - activeP;
+      fp = (float)activeP/(float)parentP;
+      imprimirVCP();
+    }
     sumatoria =0;
     contador = 0;
   }else{
