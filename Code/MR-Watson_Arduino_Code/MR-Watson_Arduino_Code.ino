@@ -1,4 +1,7 @@
+//By: ACO-626
+
 //BIBLIOTECAS
+#include <NXTIoT_dev.h>
 
 //RELEVADOR
 #define pR 2      //Pin digital a relé
@@ -16,7 +19,7 @@ int aSV = 512;   //Guarda pico superior de voltaje
 int aIV = 512;   //Guarda pico inferior de voltaje
 int aZV = 519;   //Guarda el Zero de voltaje
 float aRealV;
-float sensV = 182.4335/136.5;
+float sensV = 182.4335/139.5;
     //promedioTensión
 int iV=0;
 int grupoV=250;
@@ -70,9 +73,15 @@ void promediarInt(int &contador, int grupo, int sumando, long &sumatoria, int &p
 void imprimirOscilos();
 short cero = 0;
 
+//SIGFOX PAYLOAD
+NXTIoT_dev watsonSigfoxBrain;
+unsigned int time2Send = 15; //Tiempo en minutos
+unsigned int cicloCounter = 0;  
+
 void setup() {
   //INICIALIZAR ESTADOS
   Serial.begin(9600);     //Inicialización comunicación serial
+  time2Send = time2Send * 3;
   
   //DEFINICIONES
   pinMode(pR, OUTPUT);    //Salir para pin Relevador
@@ -118,6 +127,17 @@ void promediarRMS(int &contador, int grupo, float sumando, double &sumatoria, fl
       reactiveP = parentP - activeP;
       fp = (float)activeP/(float)parentP;
       imprimirVCP();
+      cicloCounter++;
+      
+      //Envio de mensaje a back en tiempo determinado
+      if(cicloCounter >= time2Send){
+        watsonSigfoxBrain.initpayload();
+        watsonSigfoxBrain.addfloat(rmsV);
+        watsonSigfoxBrain.addfloat(rmsC);
+        watsonSigfoxBrain.addint(activeP);
+        watsonSigfoxBrain.sendmessage();
+        cicloCounter=0;
+      }
     }
     sumatoria =0;
     contador = 0;
@@ -212,6 +232,5 @@ void imprimirVCP(){  //Imprimir valores en tabla
    Serial.print(parentP);
    Serial.print(",");
    Serial.print("FP:");
-   Serial.println(fp);
-   
+   Serial.println(fp);  
   }
