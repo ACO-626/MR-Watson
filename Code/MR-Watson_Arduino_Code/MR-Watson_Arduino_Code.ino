@@ -19,7 +19,7 @@ int aSV = 512;   //Guarda pico superior de voltaje
 int aIV = 512;   //Guarda pico inferior de voltaje
 int aZV = 519;   //Guarda el Zero de voltaje
 float aRealV;
-float sensV = 182.4335/139.5;
+float sensV = 182.4335/141;
     //promedioTensión
 int iV=0;
 int grupoV=250;
@@ -75,7 +75,7 @@ short cero = 0;
 
 //SIGFOX PAYLOAD
 NXTIoT_dev watsonSigfoxBrain;
-unsigned int time2Send = 15; //Tiempo en minutos
+unsigned int time2Send = 5; //Tiempo en minutos
 unsigned int cicloCounter = 0;  
 
 void setup() {
