@@ -75,7 +75,7 @@ short cero = 0;
 
 //SIGFOX PAYLOAD
 NXTIoT_dev watsonSigfoxBrain;
-unsigned int time2Send = 2; //Tiempo en minutos
+unsigned int time2Send = 15; //Tiempo en minutos
 unsigned int cicloCounter = 0;  
 
 void setup() {

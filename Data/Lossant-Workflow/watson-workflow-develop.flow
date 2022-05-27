@@ -1,5 +1,5 @@
 {
-  "_exportDate": "2022-05-26T22:00:16.291Z",
+  "_exportDate": "2022-05-27T06:08:46.224Z",
   "_type": "flow",
   "applicationId": "62728c3db7db3002831ccd30",
   "customNodeVersions": [
@@ -29,8 +29,8 @@
         "description": "",
         "label": "Debug",
         "name": "debug",
-        "x": 320,
-        "y": 1320
+        "x": 300,
+        "y": 2980
       },
       "outputIds": [
         [
@@ -54,8 +54,8 @@
         "description": "",
         "label": "Webhook: Reply",
         "name": "webhook-reply",
-        "x": 320,
-        "y": 1420
+        "x": 300,
+        "y": 3080
       },
       "outputIds": [
       ],
@@ -74,10 +74,6 @@
             "valueTemplate": "{{data.body.Costo}}"
           },
           {
-            "key": "EnergiaActiva",
-            "valueTemplate": ""
-          },
-          {
             "key": "Fp",
             "valueTemplate": "{{data.body.Fp}}"
           },
@@ -94,12 +90,28 @@
             "valueTemplate": "{{data.body.PotenciaReactiva}}"
           },
           {
+            "key": "ProParente",
+            "valueTemplate": "{{data.body.ProParente}}"
+          },
+          {
+            "key": "Sumcosto",
+            "valueTemplate": "{{data.body.Sumcosto}}"
+          },
+          {
+            "key": "Sumcuapo",
+            "valueTemplate": "{{data.body.Sumcuapo}}"
+          },
+          {
             "key": "Tarifa",
             "valueTemplate": "{{data.body.Tarifa}}"
           },
           {
             "key": "Voltaje",
             "valueTemplate": "{{data.body.Voltaje}}"
+          },
+          {
+            "key": "iTime",
+            "valueTemplate": "{{data.body.iTime}}"
           }
         ],
         "deviceId": "6273654f5d1e901caeb63d56",
@@ -113,8 +125,8 @@
         "description": "",
         "label": "Device: State",
         "name": "device-state",
-        "x": 320,
-        "y": 1220
+        "x": 300,
+        "y": 2880
       },
       "outputIds": [
         [
@@ -227,11 +239,11 @@
         "label": "Storage: Get Value",
         "name": "get-value",
         "x": 320,
-        "y": 1000
+        "y": 1280
       },
       "outputIds": [
         [
-          "6GQ6GEZKU3"
+          "izblZxgHuD"
         ]
       ],
       "type": "GetValueNode"
@@ -242,6 +254,14 @@
           {
             "expression": "{{data.body.Voltaje}}*{{data.body.Corriente}}*{{data.body.Tarifa}}/1000",
             "resultPath": "data.body.Costo"
+          },
+          {
+            "expression": "{{data.body.Sumcuapo}}*{{data.body.Tarifa}}",
+            "resultPath": "data.body.Sumcosto"
+          },
+          {
+            "expression": "(({{data.body.ProParente}}*{{data.body.iTime}})/({{data.body.iTime}}+1))+(({{data.body.Parente}})/({{data.body.iTime}}+1))",
+            "resultPath": "data.body.ProParente"
           }
         ]
       },
@@ -251,12 +271,12 @@
         "description": "",
         "label": "Math",
         "name": "math",
-        "x": 320,
-        "y": 1100
+        "x": 300,
+        "y": 2020
       },
       "outputIds": [
         [
-          "_EcIhEtY0H"
+          "Hr4IGDD2Fi"
         ]
       ],
       "type": "MathNode"
@@ -469,7 +489,7 @@
       },
       "outputIds": [
         [
-          "dTEKXFi0pt"
+          "HNosbpb0w8"
         ]
       ],
       "type": "StoreValueNode"
@@ -613,7 +633,7 @@
       },
       "outputIds": [
         [
-          "C9uW7jT4Zi"
+          "l1ohJFwshw"
         ]
       ],
       "type": "GetValueNode"
@@ -624,6 +644,10 @@
           {
             "expression": "{{data.Parente}}*{{data.Tarifa}}/1000",
             "resultPath": "data.body.Costo"
+          },
+          {
+            "expression": "{{data.body.Sumcuapo}}*{{data.body.Tarifa}}",
+            "resultPath": "data.body.Sumcosto"
           }
         ]
       },
@@ -633,12 +657,801 @@
         "description": "",
         "label": "Math",
         "name": "math",
-        "x": 860,
-        "y": 1040
+        "x": 840,
+        "y": 2380
       },
       "outputIds": [
         [
           "_EcIhEtY0H"
+        ]
+      ],
+      "type": "MathNode"
+    },
+    {
+      "config": {
+        "keyName": "Sumcuapo",
+        "resultPath": "data.body.Sumcuapo",
+        "value": "data.body.Sumcuapo",
+        "valueType": "path"
+      },
+      "id": "YTQLSysUEp",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 320,
+        "y": 1660
+      },
+      "outputIds": [
+        [
+          "TWhY2F6qXW"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "statements": [
+          {
+            "expression": "{{data.body.Parente}}/400 + {{defaultTo data.body.Sumcuapo 0}}",
+            "resultPath": "data.body.Sumcuapo"
+          },
+          {
+            "expression": "{{defaultTo data.body.iTIme 0}}",
+            "resultPath": "data.body.iTime"
+          },
+          {
+            "expression": "{{defaultTo data.body.ProParente 0}}",
+            "resultPath": "data.body.ProParente"
+          }
+        ]
+      },
+      "id": "izblZxgHuD",
+      "meta": {
+        "category": "logic",
+        "description": "",
+        "label": "Math",
+        "name": "math",
+        "x": 320,
+        "y": 1460
+      },
+      "outputIds": [
+        [
+          "YTQLSysUEp"
+        ]
+      ],
+      "type": "MathNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Sumcuapo",
+        "valuePath": "data.body.Sumcuapo"
+      },
+      "id": "l1ohJFwshw",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 860,
+        "y": 740
+      },
+      "outputIds": [
+        [
+          "x63eu0lwck"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "expression": "{{data.body.Sumcuapo}} > 2000"
+      },
+      "id": "TWhY2F6qXW",
+      "meta": {
+        "category": "logic",
+        "description": "",
+        "label": "Conditional",
+        "name": "conditional",
+        "x": 320,
+        "y": 1740
+      },
+      "outputIds": [
+        [
+          "6GQ6GEZKU3"
+        ],
+        [
+          "breY2nnNoS"
+        ]
+      ],
+      "type": "ConditionalNode"
+    },
+    {
+      "config": {
+        "statements": [
+          {
+            "expression": "0",
+            "resultPath": "data.body.Sumcuapo"
+          }
+        ]
+      },
+      "id": "breY2nnNoS",
+      "meta": {
+        "category": "logic",
+        "description": "",
+        "label": "Math",
+        "name": "math",
+        "x": 520,
+        "y": 1820
+      },
+      "outputIds": [
+        [
+          "13v8AQOyJ8"
+        ]
+      ],
+      "type": "MathNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Sumcosto",
+        "valuePath": "data.body.Sumcosto"
+      },
+      "id": "x63eu0lwck",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 860,
+        "y": 840
+      },
+      "outputIds": [
+        [
+          "rbJtBpVvxc"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Sumcosto",
+        "resultPath": "",
+        "value": "data.body.Sumcosto",
+        "valueType": "path"
+      },
+      "id": "Hr4IGDD2Fi",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 300,
+        "y": 2120
+      },
+      "outputIds": [
+        [
+          "4LnhWkqyZh"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Corriente",
+        "valuePath": "data.body.Corriente"
+      },
+      "id": "yxhyBjrSB1",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 240
+      },
+      "outputIds": [
+        [
+          "HoDdc0smmm"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Fp",
+        "valuePath": "data.body.Fp"
+      },
+      "id": "HoDdc0smmm",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 320
+      },
+      "outputIds": [
+        [
+          "ZoP2_7TQuG"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Parente",
+        "valuePath": "data.body.Parente"
+      },
+      "id": "ZoP2_7TQuG",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 400
+      },
+      "outputIds": [
+        [
+          "rvtYqaZdjP"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "PotenciaActiva",
+        "valuePath": "data.body.PotenciaActiva"
+      },
+      "id": "rvtYqaZdjP",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 480
+      },
+      "outputIds": [
+        [
+          "JBz1NuCIkA"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "PotenciaReactiva",
+        "valuePath": "data.body.PotenciaReactiva"
+      },
+      "id": "JBz1NuCIkA",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 560
+      },
+      "outputIds": [
+        [
+          "ir6CEoUqS3"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "null",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Voltaje",
+        "valuePath": "data.body.Voltaje"
+      },
+      "id": "ir6CEoUqS3",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 640
+      },
+      "outputIds": [
+        [
+          "iJz3EbTrzp"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Sumcuapo",
+        "valuePath": "data.body.Sumcuapo"
+      },
+      "id": "iJz3EbTrzp",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 740
+      },
+      "outputIds": [
+        [
+          "qOqIlcSeQ9"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "1.15",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Tarifa",
+        "valuePath": "data.body.Tarifa"
+      },
+      "id": "7nEhalAno8",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 1140,
+        "y": 140
+      },
+      "outputIds": [
+        [
+          "yxhyBjrSB1"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Sumcuapo",
+        "resultPath": "data.body.Sumcuapo",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "VNTewmb7wS",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 1140,
+        "y": 1060
+      },
+      "outputIds": [
+        [
+          "KpRqv5NISs"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Sumcosto",
+        "resultPath": "data.body.Sumcosto",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "G39FEAsdL9",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 1140,
+        "y": 960
+      },
+      "outputIds": [
+        [
+          "VNTewmb7wS"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Sumcuapo",
+        "valuePath": "data.body.Sumcuapo"
+      },
+      "id": "fl9koKnJNg",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 320,
+        "y": 1080
+      },
+      "outputIds": [
+        [
+          "4ijqXwPTPb"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Costo",
+        "resultPath": "",
+        "value": "data.body.costo",
+        "valueType": "path"
+      },
+      "id": "4LnhWkqyZh",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 300,
+        "y": 2220
+      },
+      "outputIds": [
+        [
+          "6H0koliKfS"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "Costo",
+        "valuePath": "data.body.Costo"
+      },
+      "id": "rbJtBpVvxc",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 860,
+        "y": 960
+      },
+      "outputIds": [
+        [
+          "s8FRjrWkBO"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Costo",
+        "resultPath": "data.body.Costo",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "qOqIlcSeQ9",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 1140,
+        "y": 840
+      },
+      "outputIds": [
+        [
+          "G39FEAsdL9"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "ProParente",
+        "valuePath": "data.body.ProParente"
+      },
+      "id": "HNosbpb0w8",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 320,
+        "y": 1000
+      },
+      "outputIds": [
+        [
+          "fl9koKnJNg"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "iTime",
+        "valuePath": "data.body.iTime"
+      },
+      "id": "4ijqXwPTPb",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 320,
+        "y": 1180
+      },
+      "outputIds": [
+        [
+          "dTEKXFi0pt"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "keyName": "Sumcuapo",
+        "resultPath": "",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "13v8AQOyJ8",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 520,
+        "y": 1920
+      },
+      "outputIds": [
+        [
+          "6GQ6GEZKU3"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "keyName": "iTime",
+        "resultPath": "",
+        "value": "data.body.iTime",
+        "valueType": "path"
+      },
+      "id": "hAPmkU32lj",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 260,
+        "y": 2700
+      },
+      "outputIds": [
+        [
+          "_EcIhEtY0H"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "keyName": "ProParente",
+        "resultPath": "",
+        "value": "data.body.ProParente",
+        "valueType": "path"
+      },
+      "id": "6H0koliKfS",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 300,
+        "y": 2320
+      },
+      "outputIds": [
+        [
+          "IXfaofMSJl"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "expression": "{{data.body.iTime}}<4"
+      },
+      "id": "IXfaofMSJl",
+      "meta": {
+        "category": "logic",
+        "description": "",
+        "label": "Conditional",
+        "name": "conditional",
+        "x": 120,
+        "y": 2460
+      },
+      "outputIds": [
+        [
+          "giLLsj5kmn"
+        ],
+        [
+          "NaQIZRmxEj"
+        ]
+      ],
+      "type": "ConditionalNode"
+    },
+    {
+      "config": {
+        "keyName": "iTime",
+        "resultPath": "",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "giLLsj5kmn",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 40,
+        "y": 2600
+      },
+      "outputIds": [
+        [
+          "_EcIhEtY0H"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "keyName": "iTime",
+        "resultPath": "data.body.iTime",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "KpRqv5NISs",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 1140,
+        "y": 1200
+      },
+      "outputIds": [
+        [
+          "O_9fYg1G_2"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "keyName": "ProParente",
+        "resultPath": "data.body.ProParente",
+        "value": "0",
+        "valueType": "number"
+      },
+      "id": "O_9fYg1G_2",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Set Value",
+        "name": "store-value",
+        "x": 1140,
+        "y": 2420
+      },
+      "outputIds": [
+        [
+          "_EcIhEtY0H"
+        ]
+      ],
+      "type": "StoreValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "iTime",
+        "valuePath": "data.body.iTime"
+      },
+      "id": "s8FRjrWkBO",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 860,
+        "y": 1060
+      },
+      "outputIds": [
+        [
+          "lumV72dZ9V"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "defaultValue": "0",
+        "defaultValueType": "json",
+        "getAll": false,
+        "keyName": "ProParente",
+        "valuePath": "data.body.ProParente"
+      },
+      "id": "lumV72dZ9V",
+      "meta": {
+        "category": "data",
+        "description": "",
+        "label": "Storage: Get Value",
+        "name": "get-value",
+        "x": 860,
+        "y": 1180
+      },
+      "outputIds": [
+        [
+          "C9uW7jT4Zi"
+        ]
+      ],
+      "type": "GetValueNode"
+    },
+    {
+      "config": {
+        "statements": [
+          {
+            "expression": "{{data.body.iTime}} + 1",
+            "resultPath": "data.body.iTime"
+          }
+        ]
+      },
+      "id": "NaQIZRmxEj",
+      "meta": {
+        "category": "logic",
+        "description": "",
+        "label": "Math",
+        "name": "math",
+        "x": 260,
+        "y": 2600
+      },
+      "outputIds": [
+        [
+          "hAPmkU32lj"
         ]
       ],
       "type": "MathNode"
@@ -682,6 +1495,27 @@
       "outputIds": [
         [
           "E1uODxwCGp"
+        ]
+      ],
+      "type": "virtualButton"
+    },
+    {
+      "config": {
+      },
+      "key": "627365beb7db3002831cd2ec-D60UBcw6EjrPJF7zQXaOu",
+      "meta": {
+        "category": "trigger",
+        "description": "",
+        "label": "btnReset",
+        "name": "virtualButton",
+        "payload": "",
+        "uiId": "t7DglYGPvL",
+        "x": 1140,
+        "y": 20
+      },
+      "outputIds": [
+        [
+          "7nEhalAno8"
         ]
       ],
       "type": "virtualButton"
