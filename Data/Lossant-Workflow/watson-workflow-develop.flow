@@ -1,5 +1,5 @@
 {
-  "_exportDate": "2022-05-27T06:08:46.224Z",
+  "_exportDate": "2022-05-27T06:31:17.815Z",
   "_type": "flow",
   "applicationId": "62728c3db7db3002831ccd30",
   "customNodeVersions": [
@@ -694,7 +694,7 @@
       "config": {
         "statements": [
           {
-            "expression": "{{data.body.Parente}}/400 + {{defaultTo data.body.Sumcuapo 0}}",
+            "expression": "{{data.body.Parente}}/4000 + {{defaultTo data.body.Sumcuapo 0}}",
             "resultPath": "data.body.Sumcuapo"
           },
           {
